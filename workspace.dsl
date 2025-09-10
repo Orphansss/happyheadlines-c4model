@@ -55,9 +55,6 @@ workspace "Happy Headlines" "C4 L1+L2" {
         articleQueue      = container "Article Queue" "RabbitMQ" "Approved articles queued." {
             tags "Queue"
         }
-        articleDb         = container "Article Database" "SQL Database" "Published articles." {
-            tags "Database"
-        }
         articleDb_Global  = container "Article Database (Global)" "SQL Database" "Published articles (Global)." {
             tags "Database"
         }
