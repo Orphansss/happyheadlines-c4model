@@ -51,11 +51,35 @@ workspace "Happy Headlines" "C4 L1+L2" {
             tags "Load Balancer"
         }
 
-        // article containers
+        // article database containers
         articleQueue      = container "Article Queue" "RabbitMQ" "Approved articles queued." {
             tags "Queue"
         }
         articleDb         = container "Article Database" "SQL Database" "Published articles." {
+            tags "Database"
+        }
+        articleDb_Global  = container "Article Database (Global)" "SQL Database" "Published articles (Global)." {
+            tags "Database"
+        }
+        articleDb_EU      = container "Article Database (EU)" "SQL Database" "Published articles (EU)." {
+            tags "Database"
+        }
+        articleDb_NA      = container "Article Database (NA)" "SQL Database" "Published articles (NA)." {
+            tags "Database"
+        }        
+        articleDb_SA      = container "Article Database (SA)" "SQL Database" "Published articles (SA)." {
+            tags "Database"
+        }
+        articleDb_AF      = container "Article Database (AF)" "SQL Database" "Published articles (AF)." {
+            tags "Database"
+        }
+        articleDb_AS      = container "Article Database (AS)" "SQL Database" "Published articles (AS)." {
+            tags "Database"
+        }
+        articleDb_OC      = container "Article Database (OC)" "SQL Database" "Published articles (OC)." {
+            tags "Database"
+        }
+        articleDb_AN      = container "Article Database (AN)" "SQL Database" "Published articles (AN)." {
             tags "Database"
         }
 
@@ -66,36 +90,39 @@ workspace "Happy Headlines" "C4 L1+L2" {
     publisher -> publisherWebApp "Publishes articles and manages drafts"
     reader    -> website "Reads articles, comments"
     subscriber -> website "Reads articles, comments, and subscribes to newsletter"
-   
 
-    // Profanity → Publisher / Reader / Subscriber
-    profanityService -> profanityDb "Read banned words"
-
-
-    // Publisher - Containers
-    publisherWebApp -> publisherService "Publish articles"
-    publisherService -> profanityService "Checks content"
-
+    // Databases and Queues → Containers
+    website -> articleService "Fetch articles"
     publisherService -> articleQueue "Enqueue approved articles"
-    articleQueue -> articleDb "Store and read articles"
+    articleService -> articleQueue "Subscribe and consume"
+    articleQueue -> articleDb_Global "Store and read articles"
+    articleQueue -> articleDb_EU "Store articles (EU)"
+    articleQueue -> articleDb_NA "Store articles (NA)"
+    articleQueue -> articleDb_SA "Store articles (SA)"
+    articleQueue -> articleDb_AF "Store articles (AF)"
+    articleQueue -> articleDb_AS "Store articles (AS)"
+    articleQueue -> articleDb_OC "Store articles (OC)"
+    articleQueue -> articleDb_AN "Store articles (AN)"
 
-    publisherWebApp -> draftService "Save and load drafts"
-    draftService -> draftDb "Store and read drafts"
-
-
-    // Readers & Subsriber - Containers
+    // Profanity, Comments & Publisher → Containers
+    publisherWebApp -> publisherService "Publish articles"    
+    publisherService -> profanityService "Checks content"
+    profanityService -> profanityDb "Read banned words"
+    
     website -> commentService "Post comments"
     commentService -> commentDb "Store and read comments"
     commentService -> profanityService "Checks comment"
 
-    website -> articleService "Fetch articles"
-    articleService -> articleQueue "Subscribe and consume"
-    articleService -> articleDb "Read articles"
-
+    // Draft - Containers
+    publisherWebApp -> draftService "Save and load drafts"
+    draftService -> draftDb "Store and read drafts"    
+    
+    //Subscriber -> articleDb "Read articles"
     website  -> subscriberService "Subscribe and unsubscribe"
     subscriberService -> subscriberDb "Store and Reads subscribers"
     subscriberService -> subscriberQueue "Enqueue new subscriber"
 
+    // Newsletter → Containers
     website -> newsletterService "Fetch & send out newsletters"
     newsletterService -> articleService "Fetch articles"
     newsletterService -> subscriberService "Fetch subscriber information"
@@ -109,19 +136,19 @@ workspace "Happy Headlines" "C4 L1+L2" {
     }
 
     container happyHeadlines "happyPublisherView" {
-        include publisher publisherWebApp draftService draftDb publisherService profanityService profanityDb articleQueue articleDb
+        include publisher publisherWebApp draftService draftDb publisherService profanityService profanityDb articleQueue articleDb_Global articleDb_EU articleDb_NA articleDb_SA articleDb_AF articleDb_AS articleDb_OC articleDb_AN
         autolayout lr
         title "Happy Headlines - Container (Publisher)"
     }
 
     container happyHeadlines "happyReaderView" {
-        include reader website articleService commentService commentDb subscriberService subscriberDb subscriberQueue articleQueue articleDb profanityService profanityDb
+        include reader website articleService commentService commentDb subscriberService subscriberDb subscriberQueue articleQueue articleDb_Global articleDb_EU articleDb_NA articleDb_SA articleDb_AF articleDb_AS articleDb_OC articleDb_AN profanityService profanityDb
         autolayout lr
         title "Happy Headlines - Container (Reader)"
     }
 
     container happyHeadlines "happySubscriberView" {
-        include subscriber website articleService commentService commentDb subscriberService subscriberDb subscriberQueue newsletterService articleDb profanityService profanityDb
+        include subscriber website articleService commentService commentDb subscriberService subscriberDb subscriberQueue articleQueue newsletterService articleDb_Global articleDb_EU articleDb_NA articleDb_SA articleDb_AF articleDb_AS articleDb_OC articleDb_AN  profanityService profanityDb
         autolayout lr
         title "Happy Headlines - Container (Subscriber)"
     }
