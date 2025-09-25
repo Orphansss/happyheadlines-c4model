@@ -92,6 +92,7 @@ workspace "Happy Headlines" "C4 L1+L2" {
     // Newsletter → Containers
     website -> newsletterService "Fetch & send out newsletters"
     newsletterService -> articleQueue "Subscribes to receive the lastest news first for immediate newsletter"
+    newsletterService -> articleService "Request article for daily newsletter"
     newsletterService -> subscriberService "Fetch subscriber information"
   }
 
