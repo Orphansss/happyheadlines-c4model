@@ -65,11 +65,13 @@ workspace "Happy Headlines" "C4 L1+L2" {
     publisher -> publisherWebApp "Publishes articles and manages drafts"
     reader    -> website "Reads articles, comments"
     subscriber -> website "Reads articles, comments, and subscribes to newsletter"
+    
     // Databases and Queues → Containers
     publisherService -> articleQueue "When a article is being published the article will be put into the article queue"
+    
     articleService -> articleQueue "Subscribes to the lastest articles in order to persist them in a database"
     articleService -> articleDb "Store and read articles"
-
+    website -> articleQueue "Subscribes"
     // Profanity, Comments & Publisher → Containers
     publisherWebApp -> publisherService "Publishing an article"    
     publisherService -> profanityService "Filtering out profanity"
@@ -78,7 +80,7 @@ workspace "Happy Headlines" "C4 L1+L2" {
     website -> commentService "Posting a comment"
     website -> commentService "Requesting comments"
     commentService -> commentDb "Storing a comment"
-        commentService -> commentDb "Fetching comments"
+    commentService -> commentDb "Fetching comments"
     commentService -> profanityService "Filtering out profanity"
 
     // Draft - Containers
@@ -87,9 +89,9 @@ workspace "Happy Headlines" "C4 L1+L2" {
     draftService -> draftDb "Storing a drafts"    
     
     //Subscriber -> articleDb "Read articles"
-    website  -> subscriberService "Subscribe and unsubscribe"
-    subscriberService -> subscriberDb "Store and Reads subscribers"
+    website  -> subscriberQueue "Subscribe and unsubscribe"
     subscriberService -> subscriberQueue "Enqueue new subscriber"
+    subscriberService -> subscriberDb "Store and Reads subscribers"
 
     // Newsletter → Containers
     website -> newsletterService "Fetch & send out newsletters"
