@@ -88,8 +88,8 @@ workspace "Happy Headlines" "C4 L1+L2" {
     reader    -> website "Reads articles, comments"
     subscriber -> website "Reads articles, comments, and subscribes to newsletter"
     // Databases and Queues → Containers
-    publisherService -> articleQueue "Enqueue approved articles"
-    articleQueue -> articleService "Subscribe and consume"
+    publisherService -> articleQueue "When a article is being published the article will be put into the article queue"
+    articleQueue -> articleService "Subscribes to the lastest articles in order to persist them in a database"
     articleService -> articleDb_Global "Store and read articles"
     articleService -> articleDb_EU "Fetching & Storing articles (EU)"
     articleService -> articleDb_NA "Fetching & Storing articles (NA)"
@@ -100,17 +100,18 @@ workspace "Happy Headlines" "C4 L1+L2" {
     articleService -> articleDb_AN "Fetching & Storing articles (AN)"
 
     // Profanity, Comments & Publisher → Containers
-    publisherWebApp -> publisherService "Publish articles"    
-    publisherService -> profanityService "Checks content"
-    profanityService -> profanityDb "Read banned words"
+    publisherWebApp -> publisherService "Publishing an article"    
+    publisherService -> profanityService "Filtering out profanity"
+    profanityService -> profanityDb "Fetchibg profanity words"
     
     website -> commentService "Post comments"
     commentService -> commentDb "Store and read comments"
     commentService -> profanityService "Checks comment"
 
     // Draft - Containers
-    publisherWebApp -> draftService "Save and load drafts"
-    draftService -> draftDb "Store and read drafts"    
+    publisherWebApp -> draftService "Saving a draft"
+    publisherWebApp -> draftService "Fetching drafts"
+    draftService -> draftDb "Storing a drafts"    
     
     //Subscriber -> articleDb "Read articles"
     website  -> subscriberService "Subscribe and unsubscribe"
