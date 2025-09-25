@@ -87,19 +87,17 @@ workspace "Happy Headlines" "C4 L1+L2" {
     publisher -> publisherWebApp "Publishes articles and manages drafts"
     reader    -> website "Reads articles, comments"
     subscriber -> website "Reads articles, comments, and subscribes to newsletter"
-
     // Databases and Queues → Containers
-    website -> articleService "Fetch articles"
     publisherService -> articleQueue "Enqueue approved articles"
-    articleService -> articleQueue "Subscribe and consume"
-    articleQueue -> articleDb_Global "Store and read articles"
-    articleQueue -> articleDb_EU "Store articles (EU)"
-    articleQueue -> articleDb_NA "Store articles (NA)"
-    articleQueue -> articleDb_SA "Store articles (SA)"
-    articleQueue -> articleDb_AF "Store articles (AF)"
-    articleQueue -> articleDb_AS "Store articles (AS)"
-    articleQueue -> articleDb_OC "Store articles (OC)"
-    articleQueue -> articleDb_AN "Store articles (AN)"
+    articleQueue -> articleService "Subscribe and consume"
+    articleService -> articleDb_Global "Store and read articles"
+    articleService -> articleDb_EU "Fetching & Storing articles (EU)"
+    articleService -> articleDb_NA "Fetching & Storing articles (NA)"
+    articleService -> articleDb_SA "Fetching & Storing articles (SA)"
+    articleService -> articleDb_AF "Fetching & Storing articles (AF)"
+    articleService -> articleDb_AS "Fetching & Storing articles (AS)"
+    articleService -> articleDb_OC "Fetching & Storing articles (OC)"
+    articleService -> articleDb_AN "Fetching & Storing articles (AN)"
 
     // Profanity, Comments & Publisher → Containers
     publisherWebApp -> publisherService "Publish articles"    
@@ -133,7 +131,7 @@ workspace "Happy Headlines" "C4 L1+L2" {
     }
 
     container happyHeadlines "happyPublisherView" {
-        include publisher publisherWebApp draftService draftDb publisherService profanityService profanityDb articleQueue articleDb_Global articleDb_EU articleDb_NA articleDb_SA articleDb_AF articleDb_AS articleDb_OC articleDb_AN
+        include publisher publisherWebApp articleService draftService draftDb publisherService profanityService profanityDb articleQueue articleDb_Global articleDb_EU articleDb_NA articleDb_SA articleDb_AF articleDb_AS articleDb_OC articleDb_AN
         autolayout lr
         title "Happy Headlines - Container (Publisher)"
     }
