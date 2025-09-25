@@ -75,9 +75,11 @@ workspace "Happy Headlines" "C4 L1+L2" {
     publisherService -> profanityService "Filtering out profanity"
     profanityService -> profanityDb "Fetchibg profanity words"
     
-    website -> commentService "Post comments"
-    commentService -> commentDb "Store and read comments"
-    commentService -> profanityService "Checks comment"
+    website -> commentService "Posting a comment"
+    website -> commentService "Requesting comments"
+    commentService -> commentDb "Storing a comment"
+        commentService -> commentDb "Fetching comments"
+    commentService -> profanityService "Filtering out profanity"
 
     // Draft - Containers
     publisherWebApp -> draftService "Saving a draft"
