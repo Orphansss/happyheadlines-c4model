@@ -55,31 +55,9 @@ workspace "Happy Headlines" "C4 L1+L2" {
         articleQueue      = container "Article Queue" "RabbitMQ" "Approved articles queued." {
             tags "Queue"
         }
-        articleDb_Global  = container "Article Database (Global)" "SQL Database" "Published articles (Global)." {
+        articleDb         = container "Article Database" "SQL Database" "Published articles." {
             tags "Database"
         }
-        articleDb_EU      = container "Article Database (EU)" "SQL Database" "Published articles (EU)." {
-            tags "Database"
-        }
-        articleDb_NA      = container "Article Database (NA)" "SQL Database" "Published articles (NA)." {
-            tags "Database"
-        }        
-        articleDb_SA      = container "Article Database (SA)" "SQL Database" "Published articles (SA)." {
-            tags "Database"
-        }
-        articleDb_AF      = container "Article Database (AF)" "SQL Database" "Published articles (AF)." {
-            tags "Database"
-        }
-        articleDb_AS      = container "Article Database (AS)" "SQL Database" "Published articles (AS)." {
-            tags "Database"
-        }
-        articleDb_OC      = container "Article Database (OC)" "SQL Database" "Published articles (OC)." {
-            tags "Database"
-        }
-        articleDb_AN      = container "Article Database (AN)" "SQL Database" "Published articles (AN)." {
-            tags "Database"
-        }
-
     }
 
     # Relationships 
@@ -89,15 +67,8 @@ workspace "Happy Headlines" "C4 L1+L2" {
     subscriber -> website "Reads articles, comments, and subscribes to newsletter"
     // Databases and Queues → Containers
     publisherService -> articleQueue "When a article is being published the article will be put into the article queue"
-    articleQueue -> articleService "Subscribes to the lastest articles in order to persist them in a database"
-    articleService -> articleDb_Global "Store and read articles"
-    articleService -> articleDb_EU "Fetching & Storing articles (EU)"
-    articleService -> articleDb_NA "Fetching & Storing articles (NA)"
-    articleService -> articleDb_SA "Fetching & Storing articles (SA)"
-    articleService -> articleDb_AF "Fetching & Storing articles (AF)"
-    articleService -> articleDb_AS "Fetching & Storing articles (AS)"
-    articleService -> articleDb_OC "Fetching & Storing articles (OC)"
-    articleService -> articleDb_AN "Fetching & Storing articles (AN)"
+    articleService -> articleQueue "Subscribes to the lastest articles in order to persist them in a database"
+    articleService -> articleDb "Store and read articles"
 
     // Profanity, Comments & Publisher → Containers
     publisherWebApp -> publisherService "Publishing an article"    
@@ -120,7 +91,7 @@ workspace "Happy Headlines" "C4 L1+L2" {
 
     // Newsletter → Containers
     website -> newsletterService "Fetch & send out newsletters"
-    newsletterService -> articleService "Fetch articles"
+    newsletterService -> articleQueue "Subscribes to receive the lastest news first for immediate newsletter"
     newsletterService -> subscriberService "Fetch subscriber information"
   }
 
@@ -132,19 +103,19 @@ workspace "Happy Headlines" "C4 L1+L2" {
     }
 
     container happyHeadlines "happyPublisherView" {
-        include publisher publisherWebApp articleService draftService draftDb publisherService profanityService profanityDb articleQueue articleDb_Global articleDb_EU articleDb_NA articleDb_SA articleDb_AF articleDb_AS articleDb_OC articleDb_AN
+        include publisher publisherWebApp articleService draftService draftDb publisherService profanityService profanityDb articleQueue newsletterService articleDb
         autolayout lr
         title "Happy Headlines - Container (Publisher)"
     }
 
     container happyHeadlines "happyReaderView" {
-        include reader website articleService commentService commentDb subscriberService subscriberDb subscriberQueue articleQueue articleDb_Global articleDb_EU articleDb_NA articleDb_SA articleDb_AF articleDb_AS articleDb_OC articleDb_AN profanityService profanityDb
+        include reader website articleService commentService commentDb subscriberService subscriberDb subscriberQueue articleQueue articleDb profanityService profanityDb
         autolayout lr
         title "Happy Headlines - Container (Reader)"
     }
 
     container happyHeadlines "happySubscriberView" {
-        include subscriber website articleService commentService commentDb subscriberService subscriberDb subscriberQueue articleQueue newsletterService articleDb_Global articleDb_EU articleDb_NA articleDb_SA articleDb_AF articleDb_AS articleDb_OC articleDb_AN  profanityService profanityDb
+        include subscriber website articleService commentService commentDb subscriberService subscriberDb subscriberQueue articleQueue newsletterService articleDb profanityService profanityDb
         autolayout lr
         title "Happy Headlines - Container (Subscriber)"
     }
